@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Bridge - Dark Mode</title>
+
+    <style>
+        /* Theme 1: Dark (default) */
+        :root {
+            --bg-color: #0d1b2a;
+            --nav-bg: #1b263b;
+            --text-color: #e0e1dd;
+            --accent-color: #00b4d8;
+            --accent-hover: #90e0ef;
+            --box-bg: #1b263b;
+            --border-color: #00b4d8;
+        }
+
+        /* Theme 2: Light */
+        body.light-theme {
+            --bg-color: #f4f7fb;
+            --nav-bg: #ffffff;
+            --text-color: #1b263b;
+            --accent-color: #0077b6;
+            --accent-hover: #0096c7;
+            --box-bg: #ffffff;
+            --border-color: #c7d6e5;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background-color: var(--nav-bg);
+            padding: 15px 40px;
+            border-bottom: 2px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 10;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--accent-color);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            list-style: none;
+            flex-wrap: wrap;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .nav-links li a:hover {
+            color: var(--accent-hover);
+        }
+
+        /* Theme toggle switch */
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-btn {
+            background-color: var(--box-bg);
+            color: var(--accent-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        .toggle-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        .dark-heading {
+            text-align: center;
+            margin-top: 100px;
+            color: var(--accent-color);
+        }
+
+        .dark-heading p {
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .dark-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 40px 60px;
+        }
+
+        .info-box {
+            background-color: var(--box-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .info-box h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        #current-theme {
+            font-weight: bold;
+            color: var(--accent-hover);
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .dark-container {
+                padding: 15px 20px 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">Block Bridge</div>
+
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="https://aboutus.com">About Us</a></li>
+            <li><a href="https://ourwebsite.com">Our Website</a></li>
+            <li><a href="#">Contact</a></li>
+
+            <li class="theme-switch">
+                <button class="toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()">
+                    Toggle Theme
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="dark-heading">
+        <h2>Dark Mode</h2>
+        <p>Theme switching with JavaScript, CSS custom properties and localStorage</p>
+    </div>
+
+    <div class="dark-container">
+
+        <div class="info-box">
+            <h3>Current Theme</h3>
+
+            <p>
+                You are currently viewing:
+                <span id="current-theme">Dark</span> mode.
+            </p>
+
+            <p>
+                Click "Toggle Theme" in the navigation bar to switch.
+                Your choice is saved so the same theme loads the next time you visit.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <h3>How It Works</h3>
+
+            <p>
+                On first visit (with no saved preference), the page checks
+                your system's preferred color scheme using
+                <code>window.matchMedia('(prefers-color-scheme: dark)')</code>.
+                After that, your manual choice is stored in
+                <code>localStorage</code> and always takes priority.
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const currentThemeLabel = document.getElementById('current-theme');
+
+        const STORAGE_KEY = 'blockBridgeTheme';
+
+        // Apply a theme to the page
+        function applyTheme(theme) {
+
+            if (theme === 'light') {
+
+                document.body.classList.add('light-theme');
+
+                currentThemeLabel.textContent = 'Light';
+
+            }
+            else {
+
+                document.body.classList.remove('light-theme');
+
+                currentThemeLabel.textContent = 'Dark';
+
+            }
+        }
+
+        // Toggle between themes
+        function toggleTheme() {
+
+            const isLight = document.body.classList.contains('light-theme');
+
+            const newTheme = isLight ? 'dark' : 'light';
+
+            applyTheme(newTheme);
+
+            localStorage.setItem(STORAGE_KEY, newTheme);
+        }
+
+        // Check for saved theme on page load
+        function loadSavedTheme() {
+
+            const savedTheme = localStorage.getItem(STORAGE_KEY);
+
+            if (savedTheme) {
+
+                applyTheme(savedTheme);
+
+                return;
+            }
+
+            // Detect system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            applyTheme(prefersDark ? 'dark' : 'light');
+        }
+
+        loadSavedTheme();
+
+    </script>
+
+</body>
+</html>
